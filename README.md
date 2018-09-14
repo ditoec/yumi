@@ -1,5 +1,10 @@
 Urdf & Gazebo files for the ABB YuMi (IRB 14000) robot
 
+### Changelog:
+  -Add clearer instructions
+  -use built-in ROS Industrial from ROS Kinetic
+  -Change RAPID TCP Server code to autodetect IP instead of hardcoded
+
 ### Dependencies
 This package depends on ros-industrial which is not released on kinetic yet. So skip step 2 if you have already install ros-industrial.
 
