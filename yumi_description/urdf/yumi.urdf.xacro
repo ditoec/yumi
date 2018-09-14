@@ -1,32 +1,166 @@
 <?xml version="1.0"?>
 <robot name="yumi" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!-- Import Rviz colors -->
-  <xacro:include filename="$(find yumi_description)/urdf/materials.xacro" />
+  <xacro:include filename="$(find yumi_description)/urdf/Util/materials.xacro" />
   <!-- Import utilities -->
-  <xacro:include filename="$(find yumi_description)/urdf/utilities.xacro" />
+  <xacro:include filename="$(find yumi_description)/urdf/Util/utilities.xacro" />
   <!--Import the yumi macro -->
   <xacro:include filename="$(find yumi_description)/urdf/yumi.xacro"/>
   <!--Import the yumi servo gripper macro -->
-  <xacro:include filename="$(find yumi_description)/urdf/yumi_servo_gripper.xacro"/>
- <!-- Import Gazebo plugins -->
-  <xacro:include filename="$(find yumi_description)/gazebo/gazebo.urdf.xacro"/>
+  <xacro:include filename="$(find yumi_description)/urdf/Grippers/yumi_servo_gripper.xacro"/>
+  <!-- Import Gazebo plugins -->
+  <xacro:include filename="$(find yumi_description)/urdf/Gazebo/gazebo.urdf.xacro"/>
 
-  <!-- Fix to world just for testing -->
-  <link name="world"/>
 
   <!--yumi-->
-  <xacro:yumi name="yumi" hardware_interface="$(arg prefix)" parent="world">
+  <xacro:yumi name="yumi" hardware_interface="hardware_interface/VelocityJointInterface" parent="${yumi_parent}" >
     <origin xyz="0 0 0.1" rpy="0 0 0" />
   </xacro:yumi>
 
   <!--right gripper-->
-  <xacro:yumi_servo_gripper name="gripper_r" hardware_interface="$(arg prefix)" parent="yumi_link_7_r">
+  <xacro:yumi_servo_gripper name="gripper_r" hardware_interface="hardware_interface/EffortJointInterface" parent="yumi_link_7_r">
     <origin xyz="0 0 0.007" rpy="0 0 ${PI}" />
   </xacro:yumi_servo_gripper>
 
   <!--left gripper-->
-  <xacro:yumi_servo_gripper name="gripper_l" hardware_interface="$(arg prefix)" parent="yumi_link_7_l">
+  <xacro:yumi_servo_gripper name="gripper_l" hardware_interface="hardware_interface/EffortJointInterface" parent="yumi_link_7_l">
     <origin xyz="0 0 0.007" rpy="0 0 ${PI}" />
   </xacro:yumi_servo_gripper>
+
+  <!--yumi head-->
+  <joint name="head_to_yumi" type="fixed">
+  <parent link="yumi_base_link"/>
+  <child link="head_base_link"/>
+  <origin xyz="-0.12 0 0.62" rpy="0 0 0" />
+  </joint>
+
+  <link name="head_base_link"/>
+  <joint name="head_pan_joint" type="revolute">
+  <axis xyz="0 0 1" />
+  <limit lower="-${PI/4}" upper="${PI/4}" effort="1.0" velocity="3.14"/>
+  <parent link="head_base_link"/>
+  <child link="head_pan_link"/>
+  <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+  <link name="head_pan_link"/>
+  <joint name="head_tilt_joint" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit lower="-${PI/4}" upper="${PI/4}" effort="1.0" velocity="3.14"/>
+  <parent link="head_pan_link"/>
+  <child link="head_tilt_link"/>
+  <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+  <link name="head_tilt_link">
+    <collision>
+      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="0.01 0.15 0.1"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.15 0.1"/>
+      </geometry>
+      <material name="Grey" />
+    </visual>
+  </link>
+
+  <!-- Add ZR300 to yumi_base_link with the given transforms-->
+  <joint name="zr300_joint" type="fixed">
+	<origin xyz="-0.12 -0.03 0.23" rpy=" 0 0 0" />
+	<parent link="yumi_base_link" />
+	<child link="zr300_link" />
+  </joint>
+  <link name="zr300_link">
+	<visual>
+		<origin xyz="0.005 0.03 0" rpy="0 0 0" />
+		<geometry>
+			<box size="0.01 0.16 0.03"/>
+		</geometry>
+		<material name="black"/>
+	</visual>
+	<collision>
+		<origin xyz="0.005 0.03 0" rpy="0 0 0" />
+		<geometry>
+			<box size="0.01 0.16 0.03"/>
+		</geometry>
+		<material name="black"/>
+	</collision>
+  </link>
+
+  <!-- Add SR300 to yumi_base_link with the given transforms-->
+  <joint name="sr300_joint" type="fixed">
+	<origin xyz="0 0 0.28" rpy=" 0 0.98020367320510338076867830836025 0" />
+	<parent link="yumi_base_link" />
+	<child link="camera_link" />
+  </joint>
+  <link name="camera_link">
+	<visual>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<geometry>
+			<box size="0.01 0.12 0.03"/>
+		</geometry>
+		<material name="black"/>
+	</visual>
+	<collision>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<geometry>
+			<box size="0.01 0.12 0.03"/>
+		</geometry>
+		<material name="black"/>
+	</collision>
+  </link>
+
+
+  <!-- Add Leap Motion to yumi_base_link with the given transforms -->
+  <joint name="leap_joint" type="fixed">
+	<origin xyz="0.625 0 0.01" rpy="1.57079632679 0 1.57079632679" />
+	<parent link="yumi_base_link" />
+	<child link="leap" />
+  </joint>
+  <link name="leap">
+	<visual>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<geometry>
+			<box size="0.08 0.01 0.03"/>
+		</geometry>
+		<material name="black"/>
+	</visual>
+	<collision>
+		<origin xyz="0 -0.01 0" rpy="0 0 0" />
+		<geometry>
+			<box size="0.08 0.01 0.03"/>
+		</geometry>
+		<material name="black"/>
+	</collision>
+  </link>
+
+  <!-- Yumi Table -->
+    <link name="yumi_base_link">
+    <collision>
+      <origin xyz="0.325 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="0.65 0.65 0"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.325 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.65 0.65 0"/>
+      </geometry>
+      <material name="Grey" />
+    </visual>
+    </link>
+
+    <xacro:property name="yumi_parent" value="world" />
+    <link name="world"/>
+    <joint name="world_joint" type="fixed">
+      <parent link="world"/>
+      <child link="yumi_base_link"/>
+      <origin xyz="0 0 0.1" rpy="0 0 0" />
+    </joint>
 
 </robot>
