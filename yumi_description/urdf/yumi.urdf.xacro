@@ -10,6 +10,9 @@
   <xacro:include filename="$(find yumi_description)/urdf/Grippers/yumi_servo_gripper.xacro"/>
   <!-- Import Gazebo plugins -->
   <xacro:include filename="$(find yumi_description)/urdf/Gazebo/gazebo.urdf.xacro"/>
+  <!-- Import the D415 camera macro -->
+  <xacro:include filename="$(find realsense2_camera)/urdf/_d415.urdf.xacro"/>
+
 
 
   <!--yumi-->
@@ -27,7 +30,7 @@
     <origin xyz="0 0 0.007" rpy="0 0 ${PI}" />
   </xacro:yumi_servo_gripper>
 
-  <!--yumi head-->
+  <!--yumi head>
   <joint name="head_to_yumi" type="fixed">
   <parent link="yumi_base_link"/>
   <child link="head_base_link"/>
@@ -66,9 +69,9 @@
       </geometry>
       <material name="Grey" />
     </visual>
-  </link>
+  </link-->
 
-  <!-- Add ZR300 to yumi_base_link with the given transforms-->
+  <!-- Add ZR300 to yumi_base_link with the given transforms>
   <joint name="zr300_joint" type="fixed">
 	<origin xyz="-0.12 -0.03 0.23" rpy=" 0 0 0" />
 	<parent link="yumi_base_link" />
@@ -89,11 +92,16 @@
 		</geometry>
 		<material name="black"/>
 	</collision>
-  </link>
+  </link-->
 
-  <!-- Add SR300 to yumi_base_link with the given transforms-->
+  <!--add D415 camera-->
+  <xacro:sensor_d415 parent="yumi_base_link">
+    <origin xyz="0.11 0 0.31" rpy="0 0 0" />
+  </xacro:sensor_d415>
+
+  <!-- Add SR300 to yumi_base_link with the given transforms>
   <joint name="sr300_joint" type="fixed">
-	<origin xyz="0 0 0.28" rpy=" 0 0.98020367320510338076867830836025 0" />
+	<origin xyz="0 0 0.28" rpy=" 0 0.80020367320510338076867830836025 0" />
 	<parent link="yumi_base_link" />
 	<child link="camera_link" />
   </joint>
@@ -112,12 +120,13 @@
 		</geometry>
 		<material name="black"/>
 	</collision>
-  </link>
+  </link-->
 
 
   <!-- Add Leap Motion to yumi_base_link with the given transforms -->
   <joint name="leap_joint" type="fixed">
-	<origin xyz="0.625 0 0.01" rpy="1.57079632679 0 1.57079632679" />
+	<!--origin xyz="0.625 0 0.01" rpy="1.57079632679 0 1.57079632679" /-->
+	<origin xyz="0.95 0 0.11" rpy="1.57079632679 0 1.57079632679" />	
 	<parent link="yumi_base_link" />
 	<child link="leap" />
   </joint>
@@ -130,7 +139,7 @@
 		<material name="black"/>
 	</visual>
 	<collision>
-		<origin xyz="0 -0.01 0" rpy="0 0 0" />
+		<origin xyz="0 0 0" rpy="0 0 0" />
 		<geometry>
 			<box size="0.08 0.01 0.03"/>
 		</geometry>
@@ -150,6 +159,54 @@
       <origin xyz="0.325 0 0" rpy="0 0 0"/>
       <geometry>
         <box size="0.65 0.65 0"/>
+      </geometry>
+      <material name="Grey" />
+    </visual>
+    </link>
+
+  <!-- User Study Table -->
+    <joint name="user_study_joint" type="fixed">
+	<origin xyz="0 0 0" rpy="0 0 0" />
+	<parent link="yumi_base_link" />
+	<child link="user_study_link" />
+    </joint>
+    <link name="user_study_link">
+    <collision>
+      <origin xyz="0.65 0 0.1" rpy="0 0 0"/>
+      <geometry>
+    <box size="0.8 1.4 0"/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.5 0 0.125" rpy="0 0 0"/>
+      <geometry>
+    <box size="0 1 0.05"/>
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.25 0 0.1" rpy="0 0 0"/>
+      <geometry>
+    <box size="0 1 0.06"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.65 0 0.1" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.8 1.4 0"/>
+      </geometry>
+      <material name="Grey" />
+    </visual>
+    <visual>
+      <origin xyz="0.5 0 0.125" rpy="0 0 0"/>
+      <geometry>
+        <box size="0 1 0.05"/>
+      </geometry>
+      <material name="Grey" />
+    </visual>
+    <visual>
+      <origin xyz="0.25 0 0.1" rpy="0 0 0"/>
+      <geometry>
+    <box size="0 1 0.06"/>
       </geometry>
       <material name="Grey" />
     </visual>
